@@ -57,7 +57,7 @@ async def signup(*, db: Session = Depends(deps.get_db), obj: dict):
             status_code=status.HTTP_400_BAD_REQUEST,
             content = {
                 "message": "Account creation failed",
-                "cause": "already  "
+                "cause": "already same user_id is used"
             }
         )
     user = crud.create_user(session=db, user_create=obj)
