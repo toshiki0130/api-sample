@@ -12,3 +12,13 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+class UserWithComment(User):
+    comment: Optional[str] = None
+    class Config:
+        from_attributes = True
+
+class UserDetailResponse(BaseModel):
+    message: str
+    user: UserWithComment
+    class Config:
+        from_attributes = True

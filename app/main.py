@@ -1,5 +1,4 @@
 from fastapi import FastAPI, status, HTTPException, Depends
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session # type: ignore
 from app.config.base import settings
@@ -10,7 +9,7 @@ from app import crud
 
 app = FastAPI(
     title = settings.PROJECT_NAME,
-    openapi_url = f"{settings.API_V1_STR}/openapi.json"
+    openapi_url = "/openapi.json"
 )
 
 @app.get("/")
@@ -61,6 +60,7 @@ async def signup(*, db: Session = Depends(deps.get_db), obj: dict):
             }
         )
     try:
+        obj["password"]
         user = crud.create_user(session=db, user_create=obj)
         db.commit()
         res = schemas.SignupResponse(
@@ -81,4 +81,9 @@ async def signup(*, db: Session = Depends(deps.get_db), obj: dict):
         )
     return res
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
+@app.post("/close", status_code=status.HTTP_200_OK)
+async def close(*, db: Session = Depends(deps.get_db), obj: dict):
+    # ここまでしかできませんでした。
+    pass
+
+app.include_router(api_router)
