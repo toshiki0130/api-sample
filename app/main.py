@@ -60,7 +60,6 @@ async def signup(*, db: Session = Depends(deps.get_db), obj: dict):
             }
         )
     try:
-        obj["password"]
         user = crud.create_user(session=db, user_create=obj)
         db.commit()
         res = schemas.SignupResponse(
