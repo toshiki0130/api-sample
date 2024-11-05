@@ -60,14 +60,25 @@ async def signup(*, db: Session = Depends(deps.get_db), obj: dict):
                 "cause": "already same user_id is used"
             }
         )
-    user = crud.create_user(session=db, user_create=obj)
-    res = schemas.SignupResponse(
-        message = "Account successfully created",
-        user = schemas.User(
-            user_id = user.user_id,
-            nickname = user.user_id
+    try:
+        user = crud.create_user(session=db, user_create=obj)
+        db.commit()
+        res = schemas.SignupResponse(
+            message = "Account successfully created",
+            user = schemas.User(
+                user_id = user.user_id,
+                nickname = user.nickname if user.nickname else None,
+            )
         )
-    )
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content = {
+                "message": "Account creation failed",
+                "cause": f"internal server error: {str(e)}"
+            }
+        )
     return res
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
